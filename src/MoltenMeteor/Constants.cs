@@ -1,13 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace MoltenMeteor {
 
     internal static class Constants {
 
+        // Can it get more self-referential than this?
         public static byte[] MagicHeader = {
             (byte)'L',
             (byte)'C',

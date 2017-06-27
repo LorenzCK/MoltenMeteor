@@ -9,7 +9,7 @@ namespace MoltenMeteor {
 
     /// <summary>
     /// Represents a single database unit, composed of one binary blob and any
-    /// number of indexes on it, that can be read.
+    /// number of indices on it, that can be read.
     /// </summary>
     public class Meteor {
 
@@ -20,16 +20,14 @@ namespace MoltenMeteor {
         public Meteor(StreamOpener opener) {
             _opener = opener ?? throw new ArgumentNullException(nameof(opener));
 
-            using(var r = new Reader(BlobStream)) {
+            using(var r = new Reader(OpenBlobStream())) {
                 BlobIdentifier = r.Identifier;
                 BlobVersion = r.Version;
             }
         }
 
-        protected Stream BlobStream {
-            get {
-                return _opener();
-            }
+        protected Stream OpenBlobStream() {
+            return _opener();
         }
 
         /// <summary>
