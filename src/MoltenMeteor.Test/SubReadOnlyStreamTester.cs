@@ -36,8 +36,7 @@ namespace MoltenMeteor.Test {
 
         [Test]
         public void SliceReadBeginning() {
-            var s = GenerateAlphabet();
-            var reader = new SubReadOnlyStream(s, 0, 4);
+            var reader = GenerateReader(0, 4);
 
             Assert.AreEqual(reader.Length, 4);
 
@@ -49,8 +48,7 @@ namespace MoltenMeteor.Test {
 
         [Test]
         public void SliceReadMiddle() {
-            var s = GenerateAlphabet();
-            var reader = new SubReadOnlyStream(s, 4, 6);
+            var reader = GenerateReader(4, 6);
 
             Assert.AreEqual(reader.Length, 6);
 
@@ -62,8 +60,7 @@ namespace MoltenMeteor.Test {
 
         [Test]
         public void SliceReadEnd() {
-            var s = GenerateAlphabet();
-            var reader = new SubReadOnlyStream(s, 25, 1);
+            var reader = GenerateReader(25, 1);
 
             Assert.AreEqual(reader.Length, 1);
 
@@ -73,8 +70,7 @@ namespace MoltenMeteor.Test {
 
         [Test]
         public void SliceReadOver() {
-            var s = GenerateAlphabet();
-            var reader = new SubReadOnlyStream(s, 25, 1);
+            var reader = GenerateReader(25, 1);
 
             Assert.AreEqual(reader.Length, 1);
 
@@ -87,8 +83,7 @@ namespace MoltenMeteor.Test {
 
         [Test]
         public void SliceReadLimited() {
-            var s = GenerateAlphabet();
-            var reader = new SubReadOnlyStream(s, 2, 1);
+            var reader = GenerateReader(2, 1);
 
             Assert.AreEqual(reader.Length, 1);
 
