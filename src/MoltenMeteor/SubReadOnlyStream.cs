@@ -56,7 +56,10 @@ namespace MoltenMeteor {
                 count = maxCount;
 
             _parent.Position = _parentPosition;
-            return _parent.Read(buffer, offset, count);
+            int effectiveRead = _parent.Read(buffer, offset, count);
+            _parentPosition = _parent.Position;
+
+            return effectiveRead;
         }
 
         private long GetParentPosition(SeekOrigin origin) {
