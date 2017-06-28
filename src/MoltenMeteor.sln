@@ -1,9 +1,11 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.25420.1
+# Visual Studio 15
+VisualStudioVersion = 15.0.26430.14
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MoltenMeteor", "MoltenMeteor\MoltenMeteor.csproj", "{A05B238A-D882-4EE7-AE00-279379588E46}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MoltenMeteor.Test", "MoltenMeteor.Test\MoltenMeteor.Test.csproj", "{76898561-36A3-47A8-B7CB-E252C014BFAD}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +17,10 @@ Global
 		{A05B238A-D882-4EE7-AE00-279379588E46}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A05B238A-D882-4EE7-AE00-279379588E46}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A05B238A-D882-4EE7-AE00-279379588E46}.Release|Any CPU.Build.0 = Release|Any CPU
+		{76898561-36A3-47A8-B7CB-E252C014BFAD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{76898561-36A3-47A8-B7CB-E252C014BFAD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{76898561-36A3-47A8-B7CB-E252C014BFAD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{76898561-36A3-47A8-B7CB-E252C014BFAD}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

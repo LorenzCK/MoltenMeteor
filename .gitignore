@@ -1,5 +1,6 @@
 src/.vs/*
-src/MoltenMeteor/obj/*
-src/MoltenMeteor/bin/*
-src/MoltenMeteor/project\.lock\.json
+**/obj/*
+**/bin/*
+project\.lock\.json
 *.csproj.user
+src/packages/*

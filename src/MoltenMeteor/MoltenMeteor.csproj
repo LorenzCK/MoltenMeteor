@@ -36,6 +36,7 @@
     <Compile Include="Meteor.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Reader.cs" />
+    <Compile Include="SubReadOnlyStream.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="project.json" />
