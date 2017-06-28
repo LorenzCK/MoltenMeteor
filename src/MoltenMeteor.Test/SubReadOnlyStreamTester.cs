@@ -102,6 +102,40 @@ namespace MoltenMeteor.Test {
             });
         }
 
+        [Test]
+        public void Seeking() {
+            var reader = GenerateReader(1, 10);
+
+            // From current
+            Assert.AreEqual('b', (char)reader.ReadByte());
+            reader.Seek(2, SeekOrigin.Current);
+            Assert.AreEqual('e', (char)reader.ReadByte());
+            reader.Seek(-1, SeekOrigin.Current);
+            Assert.AreEqual('e', (char)reader.ReadByte());
+
+            // From end
+            reader.Seek(-1, SeekOrigin.End);
+            Assert.AreEqual('k', (char)reader.ReadByte());
+            reader.Seek(-reader.Length, SeekOrigin.End);
+            Assert.AreEqual('b', (char)reader.ReadByte());
+
+            // From begin
+            reader.Seek(3, SeekOrigin.Begin);
+            Assert.AreEqual('e', (char)reader.ReadByte());
+            reader.Seek(0, SeekOrigin.Begin);
+            Assert.AreEqual('b', (char)reader.ReadByte());
+
+            Assert.Catch<IOException>(() => {
+                reader.Seek(-10, SeekOrigin.Current);
+            });
+            Assert.Catch<IOException>(() => {
+                reader.Seek(-1, SeekOrigin.Begin);
+            });
+            Assert.Catch<IOException>(() => {
+                reader.Seek(-11, SeekOrigin.End);
+            });
+        }
+
     }
 
 }
