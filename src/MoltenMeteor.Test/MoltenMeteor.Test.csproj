@@ -50,10 +50,14 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BlobTester.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SubReadOnlyStreamTester.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="blob-123.dat">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
