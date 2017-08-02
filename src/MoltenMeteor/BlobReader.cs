@@ -78,7 +78,10 @@ namespace MoltenMeteor {
 
             while (_reader.BaseStream.Position < _reader.BaseStream.Length) {
                 (var id, var length) = ReadAtCurrent();
+                long nextOffset = _reader.BaseStream.Position + length;
                 yield return (id, new SubReadOnlyStream(_reader.BaseStream, _reader.BaseStream.Position, length));
+
+                _reader.BaseStream.Position = nextOffset;
             }
 
             yield break;
