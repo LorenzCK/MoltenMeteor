@@ -8,40 +8,36 @@ using System.Threading.Tasks;
 namespace MoltenMeteor {
 
     /// <summary>
-    /// 
+    /// Provides read access to data elements in the MoltenMeter blob.
     /// </summary>
     /// <remarks>
     /// This class is NOT thread-safe. Access to the input stream is not synchronized.
     /// </remarks>
-    public class Reader : IDisposable {
+    public class BlobReader : IDisposable {
 
         private readonly BinaryReader _reader;
 
         internal byte Version { get; private set; }
         internal Guid Identifier { get; private set; }
 
-        public Reader(Stream inputStream) {
-            if (inputStream == null || !inputStream.CanRead)
-                throw new ArgumentException("Invalid stream, cannot be read", nameof(inputStream));
+        public BlobReader(Stream input) {
+            if (input == null || !input.CanRead)
+                throw new ArgumentException("Invalid stream, cannot be read", nameof(input));
 
-            _reader = new BinaryReader(inputStream);
-            _reader.BaseStream.Position = 0;
-
-            var header = _reader.ReadBytes(3);
-            if(!header.SequenceEqual(Constants.MagicHeader)) {
-                throw new ArgumentException("Stream does not contain valid header", nameof(inputStream));
-            }
-
-            Version = _reader.ReadByte();
-            if(Version != Constants.LastVersion) {
-                throw new ArgumentException($"Stream encoded using unsupported Molten Meteor v.{Version}");
-            }
-
-            Identifier = new Guid(_reader.ReadBytes(16));
+            (_reader, Version, Identifier) = input.ReadBinaryHeader();
         }
 
         public void Dispose() {
             _reader.Dispose();
+        }
+
+        private (int id, uint length) ReadAtCurrent() {
+            var id = _reader.ReadInt32();
+            var length = _reader.ReadUInt32();
+            if (length > int.MaxValue)
+                throw new ArgumentException("Blob field too large");
+
+            return (id, length);
         }
 
         /// <summary>
@@ -53,10 +49,7 @@ namespace MoltenMeteor {
         public (int id, byte[] data) ReadAsArray(long offset) {
             _reader.BaseStream.Position = offset;
 
-            var id = _reader.ReadInt32();
-            var length = _reader.ReadUInt32();
-            if (length > int.MaxValue)
-                throw new ArgumentException("Blob field too large");
+            (var id, var length) = ReadAtCurrent();
             var data = _reader.ReadBytes((int)length);
 
             return (id, data);
@@ -72,12 +65,23 @@ namespace MoltenMeteor {
         public (int id, Stream data) ReadAsStream(long offset) {
             _reader.BaseStream.Position = offset;
 
-            var id = _reader.ReadInt32();
-            var length = _reader.ReadUInt32();
-            if (length > int.MaxValue)
-                throw new ArgumentException("Blob field too large");
+            (var id, var length) = ReadAtCurrent();
 
             return (id, new SubReadOnlyStream(_reader.BaseStream, _reader.BaseStream.Position, length));
+        }
+
+        /// <summary>
+        /// Reads all available data blocks in the blob.
+        /// </summary>
+        public IEnumerable<(int id, Stream data)> ReadAll() {
+            _reader.BaseStream.MoveToData();
+
+            while (_reader.BaseStream.Position < _reader.BaseStream.Length) {
+                (var id, var length) = ReadAtCurrent();
+                yield return (id, new SubReadOnlyStream(_reader.BaseStream, _reader.BaseStream.Position, length));
+            }
+
+            yield break;
         }
 
     }

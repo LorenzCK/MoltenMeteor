@@ -11,7 +11,9 @@ namespace MoltenMeteor {
             (byte)'K',
         };
 
-        public static byte LastVersion = (byte)1;
+        public const byte LastVersion = (byte)1;
+
+        public const long CommonHeaderLength = 20; // 20-byte header (3 magic, 1 version, 16 GUID)
 
     }
 
