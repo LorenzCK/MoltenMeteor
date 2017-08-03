@@ -73,6 +73,9 @@ namespace MoltenMeteor {
         /// <summary>
         /// Reads all available data blocks in the blob.
         /// </summary>
+        /// <remarks>
+        /// The underlying stream's position can be moved during enumeration.
+        /// </remarks>
         public IEnumerable<(int id, Stream data)> ReadAll() {
             _reader.BaseStream.MoveToData();
 
@@ -82,6 +85,25 @@ namespace MoltenMeteor {
                 yield return (id, new SubReadOnlyStream(_reader.BaseStream, _reader.BaseStream.Position, length));
 
                 _reader.BaseStream.Position = nextOffset;
+            }
+
+            yield break;
+        }
+
+        /// <summary>
+        /// Reads all data blocks in the blob and returns their offsets.
+        /// </summary>
+        /// <remarks>
+        /// The underlying stream's position cannot be moved during enumeration.
+        /// </remarks>
+        internal IEnumerable<(int id, long offset)> ReadAllOffsets() {
+            _reader.BaseStream.MoveToData();
+
+            while (_reader.BaseStream.Position < _reader.BaseStream.Length) {
+                (var id, var length) = ReadAtCurrent();
+                yield return (id, _reader.BaseStream.Position);
+
+                _reader.BaseStream.Position += length;
             }
 
             yield break;

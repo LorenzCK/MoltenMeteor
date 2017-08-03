@@ -56,6 +56,15 @@ namespace MoltenMeteor {
         }
 
         /// <summary>
+        /// Generates a new in-memory identifier index.
+        /// </summary>
+        public IdentifierIndex GenerateIdentifierIndex() {
+            using(var reader = new BlobReader(OpenBlobStream())) {
+                return new IdentifierIndex(reader.ReadAllOffsets());
+            }
+        }
+
+        /// <summary>
         /// Gets an element's binary information as a raw byte array.
         /// </summary>
         public byte[] Get(int id) {
