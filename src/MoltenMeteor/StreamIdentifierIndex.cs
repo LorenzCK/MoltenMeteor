@@ -7,7 +7,10 @@ using System.Threading.Tasks;
 
 namespace MoltenMeteor {
 
-    public class IdentifierIndexReader : IIdentifierIndex, IDisposable {
+    /// <summary>
+    /// Identifier index that accesses a readable stream.
+    /// </summary>
+    public class StreamIdentifierIndex : IIdentifierIndex, IDisposable {
 
         /// <summary>
         /// Byte size of single index blocks (int32 ID, uint32 offset).
@@ -26,7 +29,7 @@ namespace MoltenMeteor {
 
         private readonly BinaryReader _reader;
 
-        public IdentifierIndexReader(Meteor owner, Stream input) {
+        public StreamIdentifierIndex(Meteor owner, Stream input) {
             if (input == null)
                 throw new ArgumentNullException();
             if (!input.CanRead || !input.CanSeek)
@@ -128,8 +131,8 @@ namespace MoltenMeteor {
         /// <summary>
         /// Convert the reader to an in-memory map.
         /// </summary>
-        public IdentifierIndex ToInMemory() {
-            return new IdentifierIndex(ReadAll());
+        public MemoryIdentifierIndex ToInMemory() {
+            return new MemoryIdentifierIndex(ReadAll());
         }
 
     }

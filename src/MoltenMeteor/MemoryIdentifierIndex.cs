@@ -7,11 +7,14 @@ using System.Threading.Tasks;
 
 namespace MoltenMeteor {
 
-    public class IdentifierIndex : IIdentifierIndex {
+    /// <summary>
+    /// In-memory representation of an identifier index.
+    /// </summary>
+    public class MemoryIdentifierIndex : IIdentifierIndex {
 
         private readonly Dictionary<int, long> _map;
 
-        internal IdentifierIndex(IEnumerable<(int, long)> map) {
+        internal MemoryIdentifierIndex(IEnumerable<(int, long)> map) {
             _map = new Dictionary<int, long>();
             foreach(var element in map) {
                 _map.Add(element.Item1, element.Item2);

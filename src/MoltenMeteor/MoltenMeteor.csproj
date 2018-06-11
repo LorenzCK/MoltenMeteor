@@ -33,9 +33,9 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Constants.cs" />
-    <Compile Include="IdentifierIndexReader.cs" />
+    <Compile Include="StreamIdentifierIndex.cs" />
     <Compile Include="IIdentifierIndex.cs" />
-    <Compile Include="IdentifierIndex.cs" />
+    <Compile Include="MemoryIdentifierIndex.cs" />
     <Compile Include="Meteor.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="BlobReader.cs" />

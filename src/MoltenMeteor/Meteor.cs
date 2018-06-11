@@ -50,7 +50,7 @@ namespace MoltenMeteor {
         /// </summary>
         /// <param name="input">Input stream. Will be disposed on return.</param>
         public void LoadIdentifierIndex(Stream input) {
-            using(var reader = new IdentifierIndexReader(this, input)) {
+            using(var reader = new StreamIdentifierIndex(this, input)) {
                 IdentifierIndex = reader.ToInMemory();
             }
         }
@@ -58,9 +58,9 @@ namespace MoltenMeteor {
         /// <summary>
         /// Generates a new in-memory identifier index.
         /// </summary>
-        public IdentifierIndex GenerateIdentifierIndex() {
+        public MemoryIdentifierIndex GenerateIdentifierIndex() {
             using(var reader = new BlobReader(OpenBlobStream())) {
-                return new IdentifierIndex(reader.ReadAllOffsets());
+                return new MemoryIdentifierIndex(reader.ReadAllOffsets());
             }
         }
 
