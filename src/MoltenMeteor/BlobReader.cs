@@ -101,7 +101,7 @@ namespace MoltenMeteor {
 
             while (_reader.BaseStream.Position < _reader.BaseStream.Length) {
                 (var id, var length) = ReadAtCurrent();
-                yield return (id, _reader.BaseStream.Position);
+                yield return (id, _reader.BaseStream.Position - 8);
 
                 _reader.BaseStream.Position += length;
             }
