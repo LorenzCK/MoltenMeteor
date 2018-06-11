@@ -1,4 +1,5 @@
 src/.vs/*
+src/\.leu
 **/obj/*
 **/bin/*
 project\.lock\.json
