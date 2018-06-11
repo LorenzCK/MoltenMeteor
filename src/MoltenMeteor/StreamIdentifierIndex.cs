@@ -38,20 +38,21 @@ namespace MoltenMeteor {
             _opener = opener;
 
             // Test input stream
-            var input = _opener();
-            if (input == null)
-                throw new ArgumentNullException();
-            if (!input.CanRead || !input.CanSeek)
-                throw new ArgumentException("Cannot read or seek stream");
-            if (input.Length % BlockSize != 0)
-                throw new ArgumentException("Malformed stream (wrong length)");
+            using (var input = _opener()) {
+                if (input == null)
+                    throw new ArgumentNullException();
+                if (!input.CanRead || !input.CanSeek)
+                    throw new ArgumentException("Cannot read or seek stream");
+                if ((input.Length - Constants.CommonHeaderLength) % BlockSize != 0)
+                    throw new ArgumentException("Malformed stream (wrong length)");
 
-            Count = (int)(input.Length / BlockSize);
+                Count = (int)((input.Length - Constants.CommonHeaderLength) / BlockSize);
 
-            // Header check
-            (var reader, var version, var identifier) = input.ReadBinaryHeader();
-            if(identifier != owner.BlobIdentifier) {
-                throw new ArgumentException("Identifier index does not match owning blob file");
+                // Header check
+                (var reader, var version, var identifier) = input.ReadBinaryHeader();
+                if (identifier != owner.BlobIdentifier) {
+                    throw new ArgumentException("Identifier index does not match owning blob file");
+                }
             }
         }
 
