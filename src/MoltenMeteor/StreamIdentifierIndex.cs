@@ -10,7 +10,9 @@ namespace MoltenMeteor {
     /// <summary>
     /// Identifier index that accesses a readable stream.
     /// </summary>
-    public class StreamIdentifierIndex : IIdentifierIndex, IDisposable {
+    public class StreamIdentifierIndex : IIdentifierIndex {
+
+        private readonly Meteor.StreamOpener _opener;
 
         /// <summary>
         /// Byte size of single index blocks (int32 ID, uint32 offset).
@@ -27,9 +29,16 @@ namespace MoltenMeteor {
         /// </remarks>
         const int LinearSearchThreshold = 4;
 
-        private readonly BinaryReader _reader;
+        public StreamIdentifierIndex(Meteor owner, Meteor.StreamOpener opener) {
+            if(owner == null)
+                throw new ArgumentNullException(nameof(owner));
+            if (opener == null)
+                throw new ArgumentNullException(nameof(opener));
 
-        public StreamIdentifierIndex(Meteor owner, Stream input) {
+            _opener = opener;
+
+            // Test input stream
+            var input = _opener();
             if (input == null)
                 throw new ArgumentNullException();
             if (!input.CanRead || !input.CanSeek)
@@ -39,10 +48,8 @@ namespace MoltenMeteor {
 
             Count = (int)(input.Length / BlockSize);
 
+            // Header check
             (var reader, var version, var identifier) = input.ReadBinaryHeader();
-            _reader = reader;
-
-            // Safety check
             if(identifier != owner.BlobIdentifier) {
                 throw new ArgumentException("Identifier index does not match owning blob file");
             }
@@ -57,24 +64,26 @@ namespace MoltenMeteor {
             int a = 0;
             int b = Count - 1;
 
-            while (b >= a) {
-                if ((b - a) <= LinearSearchThreshold) {
-                    return LinearSearch(id, a, b);
-                }
+            using (var reader = new BinaryReader(_opener())) {
+                while (b >= a) {
+                    if ((b - a) <= LinearSearchThreshold) {
+                        return LinearSearch(reader, id, a, b);
+                    }
 
-                int middle = (b + a) / 2;
+                    int middle = (b + a) / 2;
 
-                _reader.BaseStream.Position = IndexToOffset(middle);
-                int middleId = _reader.ReadInt32();
+                    reader.BaseStream.Position = IndexToOffset(middle);
+                    int middleId = reader.ReadInt32();
 
-                if (middleId == id) {
-                    return _reader.ReadInt32();
-                }
-                else if (id > middleId) {
-                    a = middle + 1;
-                }
-                else {
-                    b = middle - 1;
+                    if (middleId == id) {
+                        return reader.ReadInt32();
+                    }
+                    else if (id > middleId) {
+                        a = middle + 1;
+                    }
+                    else {
+                        b = middle - 1;
+                    }
                 }
             }
 
@@ -85,16 +94,18 @@ namespace MoltenMeteor {
         /// Sequentially reads all entries in the ID index.
         /// </summary>
         public IEnumerable<(int id, long offset)> ReadAll() {
-            _reader.BaseStream.MoveToData();
+            using (var reader = new BinaryReader(_opener())) {
+                reader.BaseStream.MoveToData();
 
-            while(_reader.BaseStream.Position < _reader.BaseStream.Length) {
-                var id = _reader.ReadInt32();
-                var offset = _reader.ReadUInt32();
+                while (reader.BaseStream.Position < reader.BaseStream.Length) {
+                    var id = reader.ReadInt32();
+                    var offset = reader.ReadUInt32();
 
-                yield return (id, offset);
+                    yield return (id, offset);
+                }
+
+                yield break;
             }
-
-            yield break;
         }
 
         /// <summary>
@@ -108,24 +119,20 @@ namespace MoltenMeteor {
             return Constants.CommonHeaderLength + (i * BlockSize);
         }
 
-        private long LinearSearch(int id, int startElement, int endElement) {
-            _reader.BaseStream.MoveToData(startElement * BlockSize);
+        private long LinearSearch(BinaryReader reader, int id, int startElement, int endElement) {
+            reader.BaseStream.MoveToData(startElement * BlockSize);
             long endPosition = Constants.CommonHeaderLength + (endElement * BlockSize);
 
-            while (_reader.BaseStream.Position <= endPosition) {
-                var foundId = _reader.ReadInt32();
+            while (reader.BaseStream.Position <= endPosition) {
+                var foundId = reader.ReadInt32();
                 if (foundId == id) {
-                    return _reader.ReadUInt32();
+                    return reader.ReadUInt32();
                 }
 
-                _reader.BaseStream.Position += 4; //skip offset value
+                reader.BaseStream.Position += 4; //skip offset value
             }
 
             return -1;
-        }
-
-        public void Dispose() {
-            _reader?.Dispose();
         }
 
         /// <summary>
