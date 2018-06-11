@@ -58,6 +58,9 @@
     <Compile Include="SubReadOnlyStreamTester.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="blob-123-identifiers.dat">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Include="blob-123.dat">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

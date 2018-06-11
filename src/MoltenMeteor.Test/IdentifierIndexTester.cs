@@ -10,7 +10,7 @@ namespace MoltenMeteor.Test {
     public class IdentifierIndexTester {
 
         [Test]
-        public void GenerateAndTest() {
+        public void GenerateAndTestInMemory() {
             var m = new Meteor(() => {
                 return Common.OpenLocalFile("blob-123.dat");
             });
@@ -19,9 +19,34 @@ namespace MoltenMeteor.Test {
 
             Assert.AreEqual(3, index.Count);
 
-            Assert.AreEqual(0x1c, index.FindById(1));
-            Assert.AreEqual(0x25, index.FindById(2));
-            Assert.AreEqual(0x2e, index.FindById(3));
+            Assert.AreEqual(0x14, index.FindById(1));
+            Assert.AreEqual(0x1d, index.FindById(2));
+            Assert.AreEqual(0x26, index.FindById(3));
+
+            Assert.AreEqual((byte)'1', m.Get(1)[0]);
+            Assert.AreEqual((byte)'2', m.Get(2)[0]);
+            Assert.AreEqual((byte)'3', m.Get(3)[0]);
+        }
+
+        [Test]
+        public void TestFromStream() {
+            var m = new Meteor(() => {
+                return Common.OpenLocalFile("blob-123.dat");
+            });
+
+            var index = m.LoadIdentifierIndex(() => {
+                return Common.OpenLocalFile("blob-123-identifiers.dat");
+            });
+
+            Assert.AreEqual(3, index.Count);
+
+            Assert.AreEqual(0x14, index.FindById(1));
+            Assert.AreEqual(0x1d, index.FindById(2));
+            Assert.AreEqual(0x26, index.FindById(3));
+
+            Assert.AreEqual((byte)'1', m.Get(1)[0]);
+            Assert.AreEqual((byte)'2', m.Get(2)[0]);
+            Assert.AreEqual((byte)'3', m.Get(3)[0]);
         }
 
     }
