@@ -33,6 +33,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Constants.cs" />
+    <Compile Include="MeteorOfT.cs" />
     <Compile Include="StreamIdentifierIndex.cs" />
     <Compile Include="IIdentifierIndex.cs" />
     <Compile Include="MemoryIdentifierIndex.cs" />

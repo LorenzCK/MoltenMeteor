@@ -26,7 +26,7 @@ namespace MoltenMeteor {
             }
         }
 
-        protected Stream OpenBlobStream() {
+        protected internal Stream OpenBlobStream() {
             return _opener();
         }
 
@@ -70,7 +70,7 @@ namespace MoltenMeteor {
         /// <summary>
         /// Gets an element's binary information as a raw byte array.
         /// </summary>
-        public byte[] Get(int id) {
+        public byte[] GetRaw(int id) {
             using (var reader = new BlobReader(OpenBlobStream())) {
                 if(IdentifierIndex != null) {
                     long offset = IdentifierIndex.FindById(id);
@@ -99,8 +99,6 @@ namespace MoltenMeteor {
                 }
             }
         }
-
-        
 
     }
 

@@ -23,9 +23,9 @@ namespace MoltenMeteor.Test {
             Assert.AreEqual(0x1d, index.FindById(2));
             Assert.AreEqual(0x26, index.FindById(3));
 
-            Assert.AreEqual((byte)'1', m.Get(1)[0]);
-            Assert.AreEqual((byte)'2', m.Get(2)[0]);
-            Assert.AreEqual((byte)'3', m.Get(3)[0]);
+            Assert.AreEqual((byte)'1', m.GetRaw(1)[0]);
+            Assert.AreEqual((byte)'2', m.GetRaw(2)[0]);
+            Assert.AreEqual((byte)'3', m.GetRaw(3)[0]);
         }
 
         [Test]
@@ -44,9 +44,9 @@ namespace MoltenMeteor.Test {
             Assert.AreEqual(0x1d, index.FindById(2));
             Assert.AreEqual(0x26, index.FindById(3));
 
-            Assert.AreEqual((byte)'1', m.Get(1)[0]);
-            Assert.AreEqual((byte)'2', m.Get(2)[0]);
-            Assert.AreEqual((byte)'3', m.Get(3)[0]);
+            Assert.AreEqual((byte)'1', m.GetRaw(1)[0]);
+            Assert.AreEqual((byte)'2', m.GetRaw(2)[0]);
+            Assert.AreEqual((byte)'3', m.GetRaw(3)[0]);
         }
 
     }
