@@ -1,24 +1,24 @@
-﻿using System;
+﻿using MoltenMeteor.IdentifierIndex;
+using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace MoltenMeteor {
 
     /// <summary>
-    /// Represents a single database unit, composed of one binary blob and any
-    /// number of indices on it, that can be read.
+    /// Represents a single database unit, based on one binary blob that can be
+    /// read and contains entries that can be read as instances of T.
     /// </summary>
-    public class Meteor {
+    public class Meteor<T> {
 
-        public delegate Stream StreamOpener();
+        public delegate T EntryReader(Stream input);
 
         private readonly StreamOpener _opener;
+        private readonly EntryReader _reader;
 
-        public Meteor(StreamOpener opener) {
+        public Meteor(StreamOpener opener, EntryReader reader) {
             _opener = opener ?? throw new ArgumentNullException(nameof(opener));
+            _reader = reader ?? throw new ArgumentNullException(nameof(reader));
 
             using(var r = new BlobReader(OpenBlobStream())) {
                 BlobIdentifier = r.Identifier;
@@ -28,6 +28,10 @@ namespace MoltenMeteor {
 
         protected internal Stream OpenBlobStream() {
             return _opener();
+        }
+
+        protected internal T ReadEntry(Stream input) {
+            return _reader(input);
         }
 
         /// <summary>
@@ -43,60 +47,51 @@ namespace MoltenMeteor {
         /// <summary>
         /// Gets the blob's identifier index, if any.
         /// </summary>
-        public IIdentifierIndex IdentifierIndex { get; private set; }
+        public IIdentifierIndex IdentifierIndex { get; protected internal set; }
 
-        /// <summary>
-        /// Reads an identifier index from an input stream and loads
-        /// an in-memory representation as the blob's current identifier index.
-        /// </summary>
-        public StreamIdentifierIndex LoadIdentifierIndex(StreamOpener indexOpener) {
-            var newIndex = new StreamIdentifierIndex(this, indexOpener);
-            IdentifierIndex = newIndex.ToInMemory();
-            return newIndex;
-        }
+        protected (long offset, BlobReader reader) Find(int id) {
+            var reader = new BlobReader(OpenBlobStream());
 
-        /// <summary>
-        /// Generates a new in-memory identifier index ands loads it as
-        /// the blob's current identifier index.
-        /// </summary>
-        public MemoryIdentifierIndex GenerateIdentifierIndex() {
-            using(var reader = new BlobReader(OpenBlobStream())) {
+            // Generate new in-memory identifier index if none available
+            if (IdentifierIndex == null) {
                 var newIndex = new MemoryIdentifierIndex(reader.ReadAllOffsets());
                 IdentifierIndex = newIndex;
-                return newIndex;
             }
+
+            var offset = IdentifierIndex.FindById(id);
+            if(offset < 0) {
+                reader.Dispose();
+                throw new ArgumentException("Element not found", nameof(id));
+            }
+
+            var foundId = reader.ReadId(offset);
+            if (foundId != id) {
+                reader.Dispose();
+                throw new InvalidOperationException($"Loading data for element #{id} returned data for #{foundId}");
+            }
+
+            return (offset, reader);
         }
 
         /// <summary>
         /// Gets an element's binary information as a raw byte array.
         /// </summary>
         public byte[] GetRaw(int id) {
-            using (var reader = new BlobReader(OpenBlobStream())) {
-                if(IdentifierIndex != null) {
-                    long offset = IdentifierIndex.FindById(id);
-                    if (offset < 0)
-                        throw new ArgumentException("Element not found", nameof(id));
+            (long offset, var reader) = Find(id);
+            using (reader) {
+                (_, var data) = reader.ReadAsArray(offset);
+                return data;
+            }
+        }
 
-                    (var outId, var outData) = reader.ReadAsArray(offset);
-#if DEBUG
-                    if (outId != id)
-                        throw new InvalidOperationException($"Loading data for element #{id} returned data for #{outId}");
-#endif
-
-                    return outData;
-                }
-                else {
-                    // Fallback to linear search on blob data
-                    foreach(var element in reader.ReadAll()) {
-                        if(element.id == id) {
-                            byte[] outData = new byte[element.data.Length];
-                            element.data.Read(outData, 0, (int)element.data.Length);
-                            return outData;
-                        }
-                    }
-
-                    throw new ArgumentException("Element not found", nameof(id));
-                }
+        /// <summary>
+        /// Gets an element and converts it into an instances of T.
+        /// </summary>
+        public T Get(int id) {
+            (long offset, var reader) = Find(id);
+            using (reader) {
+                (_, var stream) = reader.ReadAsStream(offset);
+                return ReadEntry(stream);
             }
         }
 

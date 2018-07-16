@@ -5,14 +5,14 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MoltenMeteor {
+namespace MoltenMeteor.IdentifierIndex {
 
     /// <summary>
     /// Identifier index that accesses a readable stream.
     /// </summary>
-    public class StreamIdentifierIndex : IIdentifierIndex {
+    public class StreamIdentifierIndex<T> : IIdentifierIndex {
 
-        private readonly Meteor.StreamOpener _opener;
+        private readonly StreamOpener _opener;
 
         /// <summary>
         /// Byte size of single index blocks (int32 ID, uint32 offset).
@@ -29,7 +29,7 @@ namespace MoltenMeteor {
         /// </remarks>
         const int LinearSearchThreshold = 4;
 
-        public StreamIdentifierIndex(Meteor owner, Meteor.StreamOpener opener) {
+        public StreamIdentifierIndex(Meteor<T> owner, StreamOpener opener) {
             if(owner == null)
                 throw new ArgumentNullException(nameof(owner));
             if (opener == null)

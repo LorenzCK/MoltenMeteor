@@ -20,7 +20,7 @@ namespace MoltenMeteor.Test {
             Assert.AreEqual(m.Get(1), "Ciao");
 
             var tree = m.GenerateSuffixIndex(
-                s => s.ReadToString().Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries),
+                s => s.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries),
                 s => s.ToLowerInvariant()
             );
 

@@ -41,6 +41,15 @@ namespace MoltenMeteor {
         }
 
         /// <summary>
+        /// Reads ID from an offset.
+        /// </summary>
+        public int ReadId(long offset) {
+            _reader.BaseStream.Position = offset;
+
+            return _reader.ReadInt32();
+        }
+
+        /// <summary>
         /// Reads a data field from an offset as a byte array.
         /// </summary>
         /// <remarks>
@@ -68,6 +77,21 @@ namespace MoltenMeteor {
             (var id, var length) = ReadAtCurrent();
 
             return (id, new SubReadOnlyStream(_reader.BaseStream, _reader.BaseStream.Position, length));
+        }
+
+        /// <summary>
+        /// Reads a data field from an offset and returns an unsafe stream.
+        /// </summary>
+        /// <remarks>
+        /// Data is not copied from the original stream. The original stream (moved to
+        /// the data field start position) is returned.
+        /// </remarks>
+        internal (int id, uint length, Stream stream) ReadAsStreamUnsafe(long offset) {
+            _reader.BaseStream.Position = offset;
+
+            (var id, var length) = ReadAtCurrent();
+
+            return (id, length, _reader.BaseStream);
         }
 
         /// <summary>

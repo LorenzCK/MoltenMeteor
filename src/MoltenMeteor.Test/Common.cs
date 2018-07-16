@@ -24,6 +24,12 @@ namespace MoltenMeteor.Test {
             }
         }
 
+        public static byte ReadBinaryByte(this Stream s) {
+            using (var r = new BinaryReader(s)) {
+                return r.ReadByte();
+            }
+        }
+
     }
 
 }

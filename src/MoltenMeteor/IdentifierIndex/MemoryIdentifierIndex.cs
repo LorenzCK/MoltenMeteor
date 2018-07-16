@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MoltenMeteor {
+namespace MoltenMeteor.IdentifierIndex {
 
     /// <summary>
     /// In-memory representation of an identifier index.

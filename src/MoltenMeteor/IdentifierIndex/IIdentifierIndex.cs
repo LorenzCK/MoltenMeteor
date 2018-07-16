@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MoltenMeteor {
+namespace MoltenMeteor.IdentifierIndex {
 
     /// <summary>
     /// Index on the blob that can find elements by index.
