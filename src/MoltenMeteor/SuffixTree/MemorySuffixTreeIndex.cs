@@ -22,7 +22,7 @@ namespace MoltenMeteor.SuffixTree {
             _root.AddLink(suffix + Terminator, new LeafNode(id));
         }
 
-        public IEnumerable<long> FindBySuffix(string suffix) {
+        public IEnumerable<int> FindBySuffix(string suffix) {
             throw new NotImplementedException();
         }
 

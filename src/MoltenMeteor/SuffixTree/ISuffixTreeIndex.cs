@@ -15,8 +15,8 @@ namespace MoltenMeteor.SuffixTree {
         /// Get offsets of elements matching a given suffix.
         /// </summary>
         /// <param name="suffix">String suffix to look for.</param>
-        /// <returns>Enumeration of byte offsets of matching elements.</returns>
-        IEnumerable<long> FindBySuffix(string suffix);
+        /// <returns>Enumeration of IDs of matching elements.</returns>
+        IEnumerable<int> FindBySuffix(string suffix);
 
     }
 

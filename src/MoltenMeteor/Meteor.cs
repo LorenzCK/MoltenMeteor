@@ -85,7 +85,7 @@ namespace MoltenMeteor {
         }
 
         /// <summary>
-        /// Gets an element and converts it into an instances of T.
+        /// Gets an element by ID and converts it into an instances of T.
         /// </summary>
         public T Get(int id) {
             (long offset, var reader) = Find(id);
